@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.beetles.mapper.FarmMapper">
+    <insert id="animalAdd">
+        INSERT INTO animal_own(field_name, birth_time, animal_name, animal_status, animal_count)
+        VALUES (
+                #{fieldName},
+                #{birthTime},
+                #{animalName},
+                #{animalStatus},
+                #{count}
+               )
+    </insert>
+    <update id="changeFieldName">
+        UPDATE field f,animal_own a
+        SET
+            f.field_name = #{changedName},
+            a.field_name = #{changedName}
+        WHERE
+            f.field_name = #{fieldName}
+          AND a.field_name = #{fieldName}
+    </update>
+    <update id="setAnimalStatus">
+        UPDATE animal_own
+        SET
+            animal_status = 2
+        WHERE
+            field_name = #{fieldName}
+          AND animal_name = #{animalName}
+    </update>
+    <update id="changeFieldNameOnlyInF">
+        UPDATE field
+        SET
+            field_name = #{changedName}
+        WHERE
+            field_name = #{fieldName}
+    </update>
+    <update id="setMoney">
+        UPDATE user
+        SET
+            money = #{income}
+        WHERE
+            name = "admin"
+    </update>
+    <update id="buyAnimal">
+        UPDATE user
+        SET
+            money = #{remainMoney}
+        WHERE
+            name = "admin"
+    </update>
+    <update id="fieldExpand">
+        UPDATE field
+        SET
+            total_size = #{size}
+        WHERE
+            field_name = #{fieldName}
+    </update>
+    <update id="setUserCreateTime">
+        UPDATE user
+        SET
+            create_time = #{now}
+        WHERE
+            name = "admin"
+    </update>
+    <update id="setDefaultField">
+        UPDATE field
+        SET
+            field_name = #{fieldName},
+            create_time = #{now},
+            total_size = #{size}
+    </update>
+    <update id="setDefaultfield">
+        UPDATE field
+        SET
+            create_time = #{now},
+            rent_day = 99999
+        WHERE
+            id = 1
+    </update>
+    <update id="setRentDay">
+        UPDATE field
+        SET
+            rent_day = #{rentDay}
+        WHERE
+            field_name = #{fieldName}
+    </update>
+    <insert id="setHistory">
+        INSERT INTO history(create_time, money)
+        VALUES (
+                #{createTime},
+                #{money}
+               )
+    </insert>
+    <insert id="fieldBorrow">
+        INSERT INTO field(field_name, create_time, total_size,rent_day)
+        VALUES (
+                #{fieldBorrowName},
+                #{now},
+                400,
+                #{fieldBorrowChoose}
+               )
+    </insert>
+    <delete id="deleteAnimalById">
+        DELETE FROM animal_own
+        WHERE id = #{id}
+    </delete>
+    <delete id="deletAllAnimalOwnInfo">
+        DELETE FROM animal_own
+    </delete>
+    <delete id="deleteAllFieldInfo">
+        DELETE FROM field
+        WHERE id NOT IN (1)
+    </delete>
+    <delete id="deleteAnimalByFieldName">
+        DELETE FROM animal_own
+        WHERE
+            field_name = #{fieldName}
+    </delete>
+    <delete id="deleteFieldByName">
+        DELETE FROM field
+        WHERE
+            field_name = #{fieldName}
+    </delete>
+
+    <select id="getFieldsName" resultType="java.lang.String">
+        SELECT field_name
+        FROM
+            field
+    </select>
+    <select id="login" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM
+            user
+        WHERE
+            name = #{name}
+          AND password = #{password}
+    </select>
+    <select id="selectFarmByName" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM
+            field
+        WHERE
+            field_name = #{changedName}
+    </select>
+    <select id="getFarmInfoByName" resultType="com.beetles.PO.FarmInfoByNameVO">
+        SELECT
+            ao.id,
+            f.field_name,
+            f.field_type,
+            f.create_time,
+            f.total_size,
+            f.rent_day,
+            ao.animal_name,
+            ao.birth_time,
+            ao.animal_count,
+            a.life,
+            a.income,
+            a.img_url,
+            a.size
+        FROM
+            field f,animal_own ao, animal a
+        WHERE
+            f.field_name = #{field_name}
+          AND f.field_name = ao.field_name
+          AND ao.animal_name = a.animal_name
+    </select>
+    <select id="getTotalSize" resultType="java.lang.Integer">
+        SELECT total_size
+        FROM
+            field
+        WHERE
+            field_name = #{fieldName}
+    </select>
+    <select id="getLifeAndBirthTime" resultType="com.beetles.PO.POJO.CheckLife">
+        SELECT
+            ao.id,
+            a.life,
+            ao.birth_time
+        FROM
+            animal a, animal_own ao
+    </select>
+
+    <select id="selectFarmNameInAO" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM
+            animal_own
+        WHERE
+            field_name = #{fieldName}
+    </select>
+    <select id="getAnimalInfo" resultType="com.beetles.PO.POJO.Animal">
+        SELECT *
+        FROM
+            animal
+    </select>
+    <select id="getMoney" resultType="java.lang.Float">
+        SELECT money
+        FROM
+            user
+        WHERE
+            name = "admin"
+    </select>
+    <select id="getSizeTotalAdd" resultType="java.lang.Integer">
+        SELECT
+            size
+        FROM
+            animal
+        WHERE
+            animal_name = #{animalName}
+    </select>
+    <select id="getBuyPrice" resultType="java.lang.Float">
+        SELECT buy_price
+        FROM
+            animal
+        WHERE
+            animal_name = #{animalName}
+    </select>
+    <select id="getFieldSize" resultType="java.lang.Integer">
+        SELECT total_size
+        FROM
+            field
+        WHERE
+            field_name = #{fieldName}
+    </select>
+    <select id="getUserCreateTime" resultType="java.time.LocalDateTime">
+        SELECT create_time
+        FROM
+            user
+        WHERE
+            name = "admin"
+    </select>
+    <select id="checkIncome" resultType="com.beetles.PO.POJO.IncomeCheck">
+        SELECT a.income, ao.animal_count
+        FROM
+            animal a, animal_own ao
+        WHERE
+            a.animal_name = ao.animal_name
+    </select>
+    <select id="checkHistory" resultType="com.beetles.PO.POJO.History">
+        SELECT *
+        FROM
+            history
+        ORDER BY money DESC;
+    </select>
+    <select id="getFieldInfo" resultType="com.beetles.PO.POJO.FieldInfo">
+        SELECT *
+        FROM
+            field
+    </select>
+    <select id="checkAnimalByFieldName" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM
+            animal_own
+        WHERE
+            field_name = #{fieldName}
+    </select>
+    <select id="getFarmCreateTimeByName" resultType="java.time.LocalDateTime">
+        SELECT create_time
+        FROM
+            field
+        WHERE
+            field_name = #{fieldName}
+    </select>
+    <select id="getFarmRentDayByName" resultType="java.lang.Integer">
+        SELECT rent_day
+        FROM
+            field
+        WHERE
+            field_name = #{fieldName}
+    </select>
+    <select id="getCurrentSize" resultType="com.beetles.PO.POJO.SizeVO">
+        SELECT
+            a.size,ao.animal_count
+        FROM
+            animal a,
+            animal_own ao
+        WHERE
+            ao.field_name = #{fieldName}
+          AND ao.animal_name = a.animal_name
+    </select>
+</mapper>
